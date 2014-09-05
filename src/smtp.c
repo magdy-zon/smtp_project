@@ -12,7 +12,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "smtp.h"
-#include "parseador.h"
 
 /* Esta funcion nos servira para administrar nuestra sesion que tengamos con el 
    servidor SMTP */
@@ -84,4 +83,15 @@ Usuario* ingresa_usuario(){
     scanf("%s", user->direccion);
     printf("\n");
     return user;
+}
+
+/* Creamos el mensaje */
+Mensaje* crea_mensaje(){
+    Mensaje* msj = malloc(sizeof(Mensaje));
+    printf("Por favor ingresa los datos del mensaje\n");
+    printf("Destinatario: ");
+    scanf("%s", msj->destinatario);
+    printf("Cuerpo del Mensaje: \n");
+    scanf("%s", msj->mensaje);
+    printf("\nListo! se esta procesando tu mensaje...");
 }
