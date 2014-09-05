@@ -27,11 +27,13 @@ int sesion(int socket){
     hay_error = read(socket,buffer,2000);
     if (hay_error < 0) 
          error("Hubo un error al leer desde el socket verifica como fueron creados e intentalo de nuevo");
+    printf("%s\n", buffer);
     // Generamos un arreglo que tenga cada valor de la linea del estado por separado
     // Funcion usada en la practica pasada
     char** estado = separa_request_line(buffer);
-    procesa_estado(estado);
-    printf("%s\n", buffer);
+    if(procesa_estado(estado) != 0){
+        hay_error = 1;
+    }
     close(socket);
     // Regresamos positivo de que todo salio bien :)
     return 0;
@@ -39,13 +41,17 @@ int sesion(int socket){
 
 int procesa_estado(char** estado){
     // Variable que nos indica si el servicio esta activo
-    int activo;
+    int activo, i;
+    for(i=0; i<6; i++){
+        printf("El elemento %d del request es: %s \n", i, estado[i]);
+    }
     // Verificamos que el estado que nos respondio el server sea realmente
     // 202, si quisieramos verificar mas condiciones del servicio este seria
     // el metodo donde hacerlo
-    if(!(strncmp(estado[0], "202", 3))){
+    printf("Este es el estado que recibimos del server: %s \n", estado[0]);
+    if(strncmp(estado[0], "202", 3)){
         activo = 0;
-        printf("El servidor SMTP esta listo para la comunicacion :)!\n");
+        printf("El servidor SMTP esta listo para la comunicacion :) !\n");
     } else {
         activo = 1;
         printf("El servidor SMTP no tiene el servicio disponible :( checa\n");
