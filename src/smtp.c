@@ -20,23 +20,29 @@ int sesion(int socket){
     // Funcion que nos representa si se ha encontrado un error
     int hay_error;
     // Tamaño del buffer debe ser suficiente para almacenar los mensajes recibidos
-    char buffer[2000];
+    char buffer_entrada[1000], buffer_salida[1000];
     // Esperamos a que el servidor nos de el estado del servicio
     // Si quisieramos hacer varios intentos podriamos meter este paso
     // en un ciclo
-    hay_error = read(socket,buffer,2000);
+    hay_error = read(socket,buffer_entrada,1000);
     if (hay_error < 0) 
          error("Hubo un error al leer desde el socket verifica como fueron creados e intentalo de nuevo");
-    printf("%s\n", buffer);
+    printf("%s\n", buffer_entrada);
     // Generamos un arreglo que tenga cada valor de la linea del estado por separado
     // Funcion usada en la practica pasada
-    char** estado = separa_request_line(buffer);
+    char** estado = separa_request_line(buffer_entrada);
+    // Si el servicio no esta disponible se sale
     if(procesa_estado(estado) != 0){
         hay_error = 1;
+        close(socket);
+        return hay_error;
     }
+    bzero(buffer_entrada, 1000);
+    bzero(buffer_salida, 1000);
+    hay_error = write(socket, HELO , strlen(HELO));
     close(socket);
     // Regresamos positivo de que todo salio bien :)
-    return 0;
+    return hay_error;
 }
 
 int procesa_estado(char** estado){
