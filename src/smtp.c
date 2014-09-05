@@ -37,9 +37,14 @@ int sesion(int socket){
         close(socket);
         return hay_error;
     }
+    // Limpiamos los buffers de comunicacion
     bzero(buffer_entrada, 1000);
     bzero(buffer_salida, 1000);
+    // Mandamos el mensaje HELO de listo
     hay_error = write(socket, HELO , strlen(HELO));
+    // Pedimos los datos al usuario
+    Usuario user = ingresa_usuario();
+    // Mandamos el mensaje para terminar la comunicacion
     hay_error = write(socket, QUIT , strlen(QUIT));
     printf("Funciono con exito :)\n");
     close(socket);
@@ -47,6 +52,7 @@ int sesion(int socket){
     return hay_error;
 }
 
+/* Procesamos el estado... */
 int procesa_estado(char** estado){
     // Variable que nos indica si el servicio esta activo
     int activo, i;
@@ -66,4 +72,16 @@ int procesa_estado(char** estado){
         printf("tus datos de conexion SMTP y vuelve a intentarlo mas tarde\n");
     }
     return activo;
+}
+
+/* Registramos los datos del usuario... */
+Usuario* ingresa_usuario(){
+    Usuario* user = malloc(sizeof(Usuario));
+    printf("Por favor ingresa tus datos\n");
+    printf("Usuario: ");
+    scanf("%s", user->usuario);
+    printf("\nDireccion de correo (incluyendo host): ");
+    scanf("%s", user->direccion);
+    printf("\n");
+    return user;
 }
