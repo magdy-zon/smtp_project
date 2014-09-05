@@ -43,7 +43,7 @@ int sesion(int socket){
     // Mandamos el mensaje HELO de listo
     hay_error = write(socket, HELO , strlen(HELO));
     // Pedimos los datos al usuario
-    Usuario user = ingresa_usuario();
+    Usuario* user = ingresa_usuario();
     // Mandamos el mensaje para terminar la comunicacion
     hay_error = write(socket, QUIT , strlen(QUIT));
     printf("Funciono con exito :)\n");
