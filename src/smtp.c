@@ -43,6 +43,30 @@ int sesion(int socket){
     hay_error = write(socket, HELO , strlen(HELO));
     // Pedimos los datos al usuario
     Usuario* user = ingresa_usuario();
+    // Generamos el mail from con los datos del usuario
+    char* origen = crea_mail_from(user->direccion);
+    // y lo mandamos
+    hay_error = write(socket, origen , strlen(origen));
+    // leemos la confirmacion
+    hay_error = read(socket,buffer_entrada,1000);
+    printf("Confirmacion:\n%s\n", buffer_entrada);
+    bzero(buffer_entrada, 1000);
+    // Creamos el mensaje del usuario
+    Mensaje* msj = crea_mensaje();
+    // Generamos el rcpt to con los datos del mensaje
+    char* destino = crea_rcpt_to(msj->destinatario);
+    // y lo mandamos
+    hay_error = write(socket, destino , strlen(destino));
+    // leemos la confirmacion
+    hay_error = read(socket,buffer_entrada,1000);
+    printf("Confirmacion:\n%s\n", buffer_entrada);
+    bzero(buffer_entrada, 1000);
+    // Y pedimos los datos para escribir el mensaje
+    hay_error = write(socket, "DATA \x0D\x0A" , 7);
+    // leemos los datos
+    hay_error = read(socket,buffer_entrada,1000);
+    printf("Confirmacion:\n%s\n", buffer_entrada);
+    bzero(buffer_entrada, 1000);
     // Mandamos el mensaje para terminar la comunicacion
     hay_error = write(socket, QUIT , strlen(QUIT));
     printf("Funciono con exito :)\n");
@@ -94,4 +118,5 @@ Mensaje* crea_mensaje(){
     printf("Cuerpo del Mensaje: \n");
     scanf("%s", msj->mensaje);
     printf("\nListo! se esta procesando tu mensaje...");
+    return msj;
 }
