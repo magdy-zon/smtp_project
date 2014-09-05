@@ -1,4 +1,5 @@
 #define HELO "HELO redes2015.ciencias.unam.mx \x0D\x0A"
+#define QUIT "QUIT \x0D\x0A"
 #ifndef SMTP_H
 
 /* Este metodo auxiliar nos sirve para manejar toda la sesion que se va a llevar acabo entre el cliente

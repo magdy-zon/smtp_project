@@ -40,6 +40,8 @@ int sesion(int socket){
     bzero(buffer_entrada, 1000);
     bzero(buffer_salida, 1000);
     hay_error = write(socket, HELO , strlen(HELO));
+    hay_error = write(socket, QUIT , strlen(QUIT));
+    printf("Funciono con exito :)\n");
     close(socket);
     // Regresamos positivo de que todo salio bien :)
     return hay_error;
