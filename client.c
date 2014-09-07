@@ -35,7 +35,7 @@ r_connection(char buffer[]){
 void helo(int sockfd, char buffer[]){
     bzero(buffer,256);
     int n;
-    n = write(sockfd, "HELO",strlen(buffer));
+    n = write(sockfd, "HELO dominio",strlen(buffer));
     printf("%s\n", "envié un helo");
     if (n < 0){ 
         error("Error al escribir en el socket");
@@ -95,14 +95,13 @@ int main(int argc, char *argv[])
         error("Error al leer desde el socket");
     }
     bzero(buffer,256);
-    printf("Estoy leyendo%s\n", buffer);
+    printf("Estoy leyendo %s\n", buffer);
     n = read(sockfd,buffer,255);
     if (n < 0){
             error("Error al leer desde el socket");
     }
     printf("%s\n", "Te has conectado a GMAIL");
 
-    printf("BUFFER A COMPARAR EN EL SIGUIENTE WHILE %s\n",buffer);
     while(sockfd){
         bzero(buffer,256);
         fgets(buffer,255,stdin);
