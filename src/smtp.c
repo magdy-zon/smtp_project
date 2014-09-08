@@ -100,11 +100,14 @@ int procesa_estado(char** estado){
 /* Registramos los datos del usuario... */
 Usuario* ingresa_usuario(){
     Usuario* user = malloc(sizeof(Usuario));
+    char us[50], dir[150];
     printf("Por favor ingresa tus datos\n");
     printf("Usuario: ");
-    scanf("%s", user->usuario);
+    scanf("%s", us);
     printf("\nDireccion de correo (incluyendo host): ");
-    scanf("%s", user->direccion);
+    scanf("%s", dir);
+    user->usuario   = us;
+    user->direccion = dir;
     printf("\n");
     return user;
 }
@@ -112,11 +115,14 @@ Usuario* ingresa_usuario(){
 /* Creamos el mensaje */
 Mensaje* crea_mensaje(){
     Mensaje* msj = malloc(sizeof(Mensaje));
+    char dest[150], msje[1000];
     printf("Por favor ingresa los datos del mensaje\n");
     printf("Destinatario: ");
-    scanf("%s", msj->destinatario);
+    scanf("%s", dest);
     printf("Cuerpo del Mensaje: \n");
-    scanf("%s", msj->mensaje);
+    scanf("%s", msje);
     printf("\nListo! se esta procesando tu mensaje...");
+    msj->destinatario = dest;
+    msj->mensaje = msje;
     return msj;
 }
