@@ -124,5 +124,7 @@ Mensaje* crea_mensaje(){
     msj->destinatario = dest;
     msj->mensaje = mensj;
     printf("\nListo! se esta procesando tu mensaje...");
+
     return msj;
 }
+
