@@ -49,23 +49,23 @@ int sesion(int socket){
     hay_error = write(socket, origen , strlen(origen));
     // leemos la confirmacion
     hay_error = read(socket,buffer_entrada,2000);
-    printf("Confirmacion:\n%s\n", buffer_entrada);
+    printf("Confirmacion1:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
     // Creamos el mensaje del usuario
     Mensaje* msj = crea_mensaje();
     // Generamos el rcpt to con los datos del mensaje
-    char* destino = crea_rcpt_to(msj->destinatario);
+    char* destino = crea_rcpt_to(msj->destinatario[0]);    
     // y lo mandamos
     hay_error = write(socket, destino , strlen(destino));
     // leemos la confirmacion
     hay_error = read(socket,buffer_entrada,2000);
-    printf("Confirmacion:\n%s\n", buffer_entrada);
+    printf("Confirmacion2:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
     // Y pedimos los datos para escribir el mensaje
     hay_error = write(socket, "DATA \x0D\x0A" , 7);
     // leemos los datos
     hay_error = read(socket,buffer_entrada,2000);
-    printf("Confirmacion:\n%s\n", buffer_entrada);
+    printf("Confirmacion3:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
     // Mandamos el mensaje para terminar la comunicacion
     hay_error = write(socket, QUIT , strlen(QUIT));
@@ -112,18 +112,37 @@ Usuario* ingresa_usuario(){
     return user;
 }
 
+
+
 /* Creamos el mensaje */
 Mensaje* crea_mensaje(){
     Mensaje* msj = malloc(sizeof(Mensaje));
-    char dest[150], mensj[1000];
+    //Reservamos memoria para el mensaje
+    char mensj[1000];
+    //char dest[50];
+    //Reservamos memoria para el conjunto de destinatarios
+    msj->destinatario = malloc(sizeof(char*)*10);
+    //Reservamos memoria para cada destinatario
+    msj->destinatario[0] = malloc(sizeof(char)*50);
     printf("Por favor ingresa los datos del mensaje\n");
     printf("Destinatario: ");
-    scanf("%s", dest);
+    scanf("%s", msj->destinatario[0]);
+    //Preguntamos si queremos agregar otro destinatario y leemos lo que el usuario responda
+    printf("¿Deseas agregar otro destinatario? ¿Si/No?");
+    char respuesta[5];
+    scanf("%s",respuesta);
+    int i=1;
+    while(respuesta=="Si"){
+        printf("Destinatario: ");
+        scanf("%s", msj->destinatario[i]);
+
+        i++;
+    }
+    
     printf("Cuerpo del Mensaje: \n");
     scanf("%s", mensj);
-    msj->destinatario = dest;
     msj->mensaje = mensj;
-    printf("\nListo! se esta procesando tu mensaje...");
+    printf("\nListo! se esta procesando tu mensaje...\n");
 
     return msj;
 }
