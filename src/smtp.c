@@ -53,9 +53,11 @@ int sesion(int socket){
     bzero(buffer_entrada, 2000);
     // Creamos el mensaje del usuario
     Mensaje* msj = crea_mensaje();
+    // Enviamos el mensaje a los destinatarios que introdujo
     int i = 0;
-    while(msj->destinatario[i])
+    while(strlen(msj->destinatario[i])>0)
     {
+        printf("%d\n", strlen(msj->destinatario[i]));
         // Generamos el rcpt to con los datos del mensaje
         char* destino = crea_rcpt_to(msj->destinatario[i]);    
         // y lo mandamos
@@ -63,7 +65,7 @@ int sesion(int socket){
         // leemos la confirmacion
         hay_error = read(socket,buffer_entrada,2000);
         i++;
-    }
+    
     printf("Confirmacion2:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
     // Y pedimos los datos para escribir el mensaje
@@ -72,6 +74,7 @@ int sesion(int socket){
     hay_error = read(socket,buffer_entrada,2000);
     printf("Confirmacion3:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
+    }
     // Mandamos el mensaje para terminar la comunicacion
     hay_error = write(socket, QUIT , strlen(QUIT));
     printf("Funciono con exito :)\n");
@@ -106,18 +109,16 @@ int procesa_estado(char** estado){
 Usuario* ingresa_usuario(){
     Usuario* user = malloc(sizeof(Usuario));
     char usuar[50], dir[150];
-    printf("Por favor ingresa tus datos\n");
-    printf("Usuario: ");
+    printf("-POR FAVOR INGRESA TUS DATOS-\n");
+    printf("\nUsuario: ");
     scanf("%s", usuar);
-    printf("\nDireccion de correo (incluyendo host): ");
+    printf("Direccion de correo (incluyendo host): ");
     scanf("%s", dir);
     printf("\n");
     user->usuario = usuar;
     user->direccion = dir;
     return user;
 }
-
-
 
 /* Creamos el mensaje */
 Mensaje* crea_mensaje(){
@@ -138,19 +139,17 @@ Mensaje* crea_mensaje(){
     {
         printf("Destinatario: ");
         scanf("%s", msj->destinatario[i]);
+        printf("PARA:%s\n", msj->destinatario[i]);
         printf("%s\n", "¿Deseas agregar otro destinatario? ¿SI / NO?");
         scanf("%s", respuesta);        
         if(strncmp("SI", respuesta,1)==0){
             bandera = 1;
-            printf("%i\n", bandera);
             i++;
         }
         else
         {
             bandera = 0;
         }
-        printf("respuesta: %s\n", respuesta);
-        printf("destinatario: %s\n", msj->destinatario[i]);
     }
     
     printf("Cuerpo del Mensaje: \n");
