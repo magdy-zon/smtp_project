@@ -53,12 +53,17 @@ int sesion(int socket){
     bzero(buffer_entrada, 2000);
     // Creamos el mensaje del usuario
     Mensaje* msj = crea_mensaje();
-    // Generamos el rcpt to con los datos del mensaje
-    char* destino = crea_rcpt_to(msj->destinatario[0]);    
-    // y lo mandamos
-    hay_error = write(socket, destino , strlen(destino));
-    // leemos la confirmacion
-    hay_error = read(socket,buffer_entrada,2000);
+    int i = 0;
+    while(msj->destinatario[i])
+    {
+        // Generamos el rcpt to con los datos del mensaje
+        char* destino = crea_rcpt_to(msj->destinatario[i]);    
+        // y lo mandamos
+        hay_error = write(socket, destino , strlen(destino));
+        // leemos la confirmacion
+        hay_error = read(socket,buffer_entrada,2000);
+        i++;
+    }
     printf("Confirmacion2:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
     // Y pedimos los datos para escribir el mensaje
@@ -119,24 +124,33 @@ Mensaje* crea_mensaje(){
     Mensaje* msj = malloc(sizeof(Mensaje));
     //Reservamos memoria para el mensaje
     char mensj[1000];
-    //char dest[50];
     //Reservamos memoria para el conjunto de destinatarios
     msj->destinatario = malloc(sizeof(char*)*10);
     //Reservamos memoria para cada destinatario
-    msj->destinatario[0] = malloc(sizeof(char)*50);
+    int reserva;
+    for(reserva = 0; reserva < 10 ; reserva++)
+        msj->destinatario[reserva] = malloc(sizeof(char)*50);
     printf("Por favor ingresa los datos del mensaje\n");
-    printf("Destinatario: ");
-    scanf("%s", msj->destinatario[0]);
-    //Preguntamos si queremos agregar otro destinatario y leemos lo que el usuario responda
-    printf("¿Deseas agregar otro destinatario? ¿Si/No?");
-    char respuesta[5];
-    scanf("%s",respuesta);
-    int i=1;
-    while(respuesta=="Si"){
+    char respuesta[2];
+    int i=0;
+    int bandera = 1;
+    while(bandera==1)
+    {
         printf("Destinatario: ");
         scanf("%s", msj->destinatario[i]);
-
-        i++;
+        printf("%s\n", "¿Deseas agregar otro destinatario? ¿SI / NO?");
+        scanf("%s", respuesta);        
+        if(strncmp("SI", respuesta,1)==0){
+            bandera = 1;
+            printf("%i\n", bandera);
+            i++;
+        }
+        else
+        {
+            bandera = 0;
+        }
+        printf("respuesta: %s\n", respuesta);
+        printf("destinatario: %s\n", msj->destinatario[i]);
     }
     
     printf("Cuerpo del Mensaje: \n");

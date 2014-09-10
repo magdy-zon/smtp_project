@@ -72,5 +72,6 @@ char* crea_rcpt_to(char* destino){
     strcpy(rcpt_to, "RCPT TO:<");
     strcat(rcpt_to, destino);
     strcat(rcpt_to, ">\x0D\x0A");
+    printf("%s\n", rcpt_to);
     return rcpt_to;
 }
