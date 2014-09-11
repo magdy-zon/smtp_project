@@ -29,13 +29,13 @@ int sesion(int socket){
     printf("%s\n", buffer_entrada);
     // Generamos un arreglo que tenga cada valor de la linea del estado por separado
     // Funcion usada en la practica pasada
-    // char** estado = separa_request_line(buffer_entrada);
+    /*char** estado = separa_request_line(buffer_entrada);
     // Si el servicio no esta disponible se sale
-    /* if(procesa_estado(estado) != 0){
+    if(procesa_estado(estado)){
         hay_error = 1;
         close(socket);
         return hay_error;
-    } */
+    }*/
     // Limpiamos los buffers de comunicacion
     bzero(buffer_entrada, 2000);
     bzero(buffer_salida, 1000);
@@ -56,16 +56,35 @@ int sesion(int socket){
     // Generamos el rcpt to con los datos del mensaje
     char* destino = crea_rcpt_to(msj->destinatario);
     // y lo mandamos
+    printf("Este es el mensaje rcpt to: %s", destino);
     hay_error = write(socket, destino , strlen(destino));
     // leemos la confirmacion
     hay_error = read(socket,buffer_entrada,2000);
     printf("Confirmacion:\n%s\n", buffer_entrada);
+    // Verificamos que el servidor tenga disponible la accion de mandar
+    // Y no haya errores
+    /* estado = separa_request_line(buffer_entrada);
+    if(procesa_estado(estado)){
+        hay_error = 1;
+        close(socket);
+        return hay_error;
+    }*/
     bzero(buffer_entrada, 2000);
     // Y pedimos los datos para escribir el mensaje
     hay_error = write(socket, "DATA \x0D\x0A" , 7);
     // leemos los datos
     hay_error = read(socket,buffer_entrada,2000);
     printf("Confirmacion:\n%s\n", buffer_entrada);
+    bzero(buffer_entrada, 2000);
+    // Y escribimos el mensaje
+    // char* cuerpo_mensaje = crea_cuerpo(msj->mensaje);
+    // Mandamos el mensaje por el buffer
+    hay_error = write(socket, msj->mensaje , strlen(msj->mensaje));
+    hay_error = write(socket, "\x0D\x0A.\x0D\x0A" , strlen(msj->mensaje));
+    // leemos la confirmacion
+    hay_error = read(socket,buffer_entrada,2000);
+    printf("Confirmacion:\n%s\n", buffer_entrada);
+    // Cerramos la conexion
     bzero(buffer_entrada, 2000);
     // Mandamos el mensaje para terminar la comunicacion
     hay_error = write(socket, QUIT , strlen(QUIT));
@@ -89,6 +108,9 @@ int procesa_estado(char** estado){
     if(strncmp(estado[0], "202", 3)){
         activo = 0;
         printf("El servidor SMTP esta listo para la comunicacion :) !\n");
+    } else if(strncmp(estado[0], "354", 3)){
+        activo = 0;
+        printf("El servidor SMTP esta listo para mandar el mensaje :) !\n");
     } else {
         activo = 1;
         printf("El servidor SMTP no tiene el servicio disponible :( checa\n");
@@ -115,14 +137,14 @@ Usuario* ingresa_usuario(){
 /* Creamos el mensaje */
 Mensaje* crea_mensaje(){
     Mensaje* msj = malloc(sizeof(Mensaje));
-    char dest[150], mensj[1000];
+    msj->destinatario = malloc(sizeof(char)*150);
+    msj->mensaje = malloc(sizeof(char)*1000);
     printf("Por favor ingresa los datos del mensaje\n");
     printf("Destinatario: ");
-    scanf("%s", dest);
+    scanf("%s", msj->destinatario);
     printf("Cuerpo del Mensaje: \n");
-    scanf("%s", mensj);
-    msj->destinatario = dest;
-    msj->mensaje = mensj;
-    printf("\nListo! se esta procesando tu mensaje...");
+    scanf("%s", msj->mensaje);
+    printf("Este es tu destinatario: %s \n", msj->destinatario);
+    printf("\nListo! se esta procesando tu mensaje...    ");
     return msj;
 }

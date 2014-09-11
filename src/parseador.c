@@ -73,3 +73,12 @@ char* crea_rcpt_to(char* destino){
     strcat(rcpt_to, ">\x0D\x0A");
     return rcpt_to;
 }
+
+char* crea_cuerpo(char* cuerpo){
+    // Reservamos la memoria necesaria consideramos 
+    // 2000 espacios para el mensaje por eleccion aunque
+    // si se quiere ser mas preciso el tamaño se debe ajustar
+    // al mensaje
+    char* body = malloc(sizeof(char) * 2000);
+    return body;
+}
