@@ -55,10 +55,11 @@ char* crea_mail_from(char* fuente){
     // si se quiere ser mas preciso el tamaño se debe ajustar
     // al mensaje
     printf("fuente: %s\n", fuente);
-    char* mail_from = malloc(sizeof(char) * 200);
+    char *mail_from = malloc(sizeof(char)* 200);
     strcpy(mail_from, "MAIL FROM:<");
-    strcpy(mail_from, fuente);
-    strcpy(mail_from, ">\x0D\x0A");
+    strcat(mail_from, fuente);
+    strcat(mail_from, ">\x0D\x0A");
+    printf("\nMail_from formado: %s\n", mail_from);
     return mail_from;   
 }
 
