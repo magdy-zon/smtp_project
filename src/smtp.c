@@ -69,7 +69,7 @@ int sesion(int socket){
         // leemos la confirmacion
         hay_error = read(socket,buffer_entrada,2000);
         i++;
-    
+    }
     printf("Confirmacion2:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
     // Y pedimos los datos para escribir el mensaje
@@ -78,8 +78,14 @@ int sesion(int socket){
     hay_error = read(socket,buffer_entrada,2000);
     printf("Confirmacion3:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
-    }
+    // Y mandamos el mensaje
+    hay_error = write(socket, msj->mensaje , strlen(msj->mensaje));
+    hay_error = write(socket, "\x0D\x0A.\x0D\x0A" , strlen(msj->mensaje));
+    // leemos la confirmacion
+    hay_error = read(socket,buffer_entrada,2000);
+    printf("Confirmacion:\n%s\n", buffer_entrada);
     // Mandamos el mensaje para terminar la comunicacion
+    bzero(buffer_entrada, 2000);
     hay_error = write(socket, QUIT , strlen(QUIT));
     printf("Funciono con exito :)\n");
     close(socket);
