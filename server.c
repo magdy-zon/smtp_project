@@ -11,6 +11,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+void quit(int, char*);
+void mail_from(int, char*);
+void get_command(int, char*);
+int is_valid_mail(char*);
+
 void error(const char *msg)
 {
     perror(msg);
@@ -55,7 +60,7 @@ int main(int argc, char *argv[])
               sizeof(serv_addr)) < 0) 
               error("Error al enlazar");
 
-     listen(sockfd,5);
+     listen(sockfd, 5);
      clilen = sizeof(cli_addr);
      newsockfd = accept(sockfd, 
                  (struct sockaddr *) &cli_addr, 
@@ -66,27 +71,94 @@ int main(int argc, char *argv[])
      }
      printf("%s\n", "Conexión establecida");
      bzero(buffer,256);
-     //Mandamos una respuesta positiva de que pudimos responderle al cliente
-     n = write(newsockfd,"200 OK", 256);
+     //Mandamos una respuesta positiva de que pudimos responderle al cliente, primer mensaje que manda
+     n = write(newsockfd, "200 OK", 256);
      error_esc(n);
-     bzero(buffer,256);
-     printf("%s\n", "recibí un HELO");
+     bzero(buffer, 256);
+     // lee mensaje 2
      n = read(newsockfd, buffer,256);
+     printf("recibí un %s\n", buffer);
      error_lect(n);
      
-     n = write(newsockfd,"Soy GMAIL y mi dominio es:",256);
+     // escribe mensaje 3
+     n = write(newsockfd, "Soy GMAIL y mi dominio es:\n", 256);
      error_esc(n);
+     printf("despues de mandar gmail\n");
 
-
-    while(strstr(buffer,"QUIT")==NULL){
+    while(strstr(buffer, "QUIT")==NULL) {
         bzero(buffer,256);
         n = read(newsockfd, buffer,256);
         error_lect(n);
-        printf("Aquí está el mensaje recibido: %s\n",buffer);
-        n = write(newsockfd,buffer,256);
+        printf("Procesando el  mensaje  \" %s \" recibido\n", 
+	       buffer);
+	get_command(newsockfd, buffer);
+	//n = write(newsockfd,buffer,256);
         error_esc(n);
     }
     close(newsockfd);
     close(sockfd);
     return 0; 
+}
+
+void quit(int sockfd, char* line) {
+  printf("entro a quit\n%s\n",line);
+  //  bzero(buffer, 256);
+  int n;
+  n = write(sockfd, line, strlen(line));
+  printf("%s\n", "Intentando mandar mensaje");
+  if (n < 0){ 
+    error("Error al escribir en el socket");
+  }
+  printf("mensaje enviado\n");
+}
+
+void mail_from(int sockfd, char* line) {
+  int n;
+  if (is_valid_mail(line)) {
+    printf("EL CORREO SÍ EXISTE, PROCEDEMOS!\n");
+    // Manda respuesta positiva
+    n = write(sockfd, "250 ok", 50);
+    printf("Mandadno respuesta de éxito...\n");
+    if (n < 0){
+      error("Error al escribir en el socket");
+    }
+    printf("Mensaje enviado!\n");
+    
+  } else {
+    printf("EL CORREO NO EXISTE!\n");
+    // Manda respuesta negativa;
+  } 
+
+  //printf("El correo %s entro a mail\n", line);
+  
+}
+
+void get_command(int sockfd, char* line) {
+  char *tmp;
+  
+  // Para quit
+  tmp = malloc(sizeof(char)*4);
+  strncpy(tmp, line, 4);
+  tmp[4] = '\0';
+
+  if (strcmp(tmp, "QUIT") == 0) {
+    quit(sockfd, line);
+  }
+  free(tmp);
+
+  // Para mail from
+  tmp = malloc(sizeof(char)*10);
+  strncpy(tmp, line, 10);
+  tmp[10] = '\0';
+  if (strcmp(tmp, "MAIL FROM:") == 0){
+    mail_from(sockfd, line);
+  }
+  free(tmp);
+
+  printf("termina for");
+  
+}
+
+int is_valid_mail(char* correo){
+  return 1;
 }
