@@ -5,7 +5,8 @@
 // Estructura que representa un mensaje
 typedef struct arreglo_mensaje{
     // En un principio pensemos solo en un destinatario
-    char* destinatario;
+    char** destinatario;
+    //char* destintario;
     char* mensaje;
 } Mensaje;
 

@@ -54,7 +54,7 @@ char* crea_mail_from(char* fuente){
     // 200 espacios para el mensaje por eleccion aunque
     // si se quiere ser mas preciso el tamaño se debe ajustar
     // al mensaje
-    char* mail_from = malloc(sizeof(char) * 200);
+    char *mail_from = malloc(sizeof(char)* 200);
     strcpy(mail_from, "MAIL FROM:<");
     strcat(mail_from, fuente);
     strcat(mail_from, ">\x0D\x0A");

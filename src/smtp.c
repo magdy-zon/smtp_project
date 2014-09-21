@@ -41,40 +41,42 @@ int sesion(int socket){
     bzero(buffer_salida, 1000);
     // Mandamos el mensaje HELO de listo
     hay_error = write(socket, HELO , strlen(HELO));
+    hay_error = read(socket,buffer_entrada,2000);
+    printf("Confirmacion1:\n%s\n", buffer_entrada);
+    bzero(buffer_entrada, 2000);
     // Pedimos los datos al usuario
     Usuario* user = ingresa_usuario();
     // Generamos el mail from con los datos del usuario
     char* origen = crea_mail_from(user->direccion);
+    printf("\nEste es el mensaje Mailfrom a mandar: %s\n", origen);
     // y lo mandamos
     hay_error = write(socket, origen , strlen(origen));
     // leemos la confirmacion
     hay_error = read(socket,buffer_entrada,2000);
-    printf("Confirmacion:\n%s\n", buffer_entrada);
+    printf("Confirmacion2:\t%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
     // Creamos el mensaje del usuario
     Mensaje* msj = crea_mensaje();
-    // Generamos el rcpt to con los datos del mensaje
-    char* destino = crea_rcpt_to(msj->destinatario);
-    // y lo mandamos
-    printf("Este es el mensaje rcpt to: %s", destino);
-    hay_error = write(socket, destino , strlen(destino));
-    // leemos la confirmacion
-    hay_error = read(socket,buffer_entrada,2000);
-    printf("Confirmacion:\n%s\n", buffer_entrada);
-    // Verificamos que el servidor tenga disponible la accion de mandar
-    // Y no haya errores
-    /* estado = separa_request_line(buffer_entrada);
-    if(procesa_estado(estado)){
-        hay_error = 1;
-        close(socket);
-        return hay_error;
-    }*/
+    // Enviamos el mensaje a los destinatarios que introdujo
+    int i = 0;
+    while(strlen(msj->destinatario[i])>0)
+    {
+        // Generamos el rcpt to con los datos del mensaje
+        char* destino = crea_rcpt_to(msj->destinatario[i]);    
+        // y lo mandamos
+        printf("Este es el mensaje rcpt to: %s\n", destino);
+        hay_error = write(socket, destino , strlen(destino));
+        // leemos la confirmacion
+        hay_error = read(socket,buffer_entrada,2000);
+        i++;
+    }
+    printf("Confirmacion3:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
     // Y pedimos los datos para escribir el mensaje
     hay_error = write(socket, "DATA \x0D\x0A" , 7);
     // leemos los datos
     hay_error = read(socket,buffer_entrada,2000);
-    printf("Confirmacion:\n%s\n", buffer_entrada);
+    printf("Confirmacion4:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
     // Y escribimos el mensaje
     // char* cuerpo_mensaje = crea_cuerpo(msj->mensaje);
@@ -83,12 +85,12 @@ int sesion(int socket){
     hay_error = write(socket, "\x0D\x0A.\x0D\x0A" , strlen(msj->mensaje));
     // leemos la confirmacion
     hay_error = read(socket,buffer_entrada,2000);
-    printf("Confirmacion:\n%s\n", buffer_entrada);
-    // Cerramos la conexion
-    bzero(buffer_entrada, 2000);
+    printf("Confirmacion5:\n%s\n", buffer_entrada);
     // Mandamos el mensaje para terminar la comunicacion
+    bzero(buffer_entrada, 2000);
     hay_error = write(socket, QUIT , strlen(QUIT));
     printf("Funciono con exito :)\n");
+    // Cerramos la conexion
     close(socket);
     // Regresamos positivo de que todo salio bien :)
     return hay_error;
@@ -122,29 +124,53 @@ int procesa_estado(char** estado){
 /* Registramos los datos del usuario... */
 Usuario* ingresa_usuario(){
     Usuario* user = malloc(sizeof(Usuario));
-    char usuar[50], dir[150];
-    printf("Por favor ingresa tus datos\n");
-    printf("Usuario: ");
-    scanf("%s", usuar);
-    printf("\nDireccion de correo (incluyendo host): ");
-    scanf("%s", dir);
+    user->usuario = malloc(sizeof(char) * 50);
+    user->direccion = malloc(sizeof(char) * 150);
+    printf("-POR FAVOR INGRESA TUS DATOS-\n");
+    printf("\nUsuario: ");
+    scanf("%s", user->usuario);
+    printf("Direccion de correo (incluyendo host): ");
+    scanf("%s", user->direccion);
     printf("\n");
-    user->usuario = usuar;
-    user->direccion = dir;
     return user;
 }
 
 /* Creamos el mensaje */
 Mensaje* crea_mensaje(){
     Mensaje* msj = malloc(sizeof(Mensaje));
-    msj->destinatario = malloc(sizeof(char)*150);
-    msj->mensaje = malloc(sizeof(char)*1000);
+    //Reservamos memoria para el mensaje
+    char mensj[1000];
+    //Reservamos memoria para el conjunto de destinatarios
+    msj->destinatario = malloc(sizeof(char*)*10);
+    //Reservamos memoria para cada destinatario
+    int reserva;
+    for(reserva = 0; reserva < 10 ; reserva++)
+        msj->destinatario[reserva] = malloc(sizeof(char)*50);
     printf("Por favor ingresa los datos del mensaje\n");
-    printf("Destinatario: ");
-    scanf("%s", msj->destinatario);
+    char respuesta[2];
+    int i=0;
+    int bandera = 1;
+    while(bandera==1)
+    {
+        printf("Destinatario: ");
+        scanf("%s", msj->destinatario[i]);
+        printf("PARA:%s\n", msj->destinatario[i]);
+        printf("%s\n", "¿Deseas agregar otro destinatario? ¿SI / NO?");
+        scanf("%s", respuesta);        
+        if(strncmp("SI", respuesta,1)==0){
+            bandera = 1;
+            i++;
+        }
+        else
+        {
+            bandera = 0;
+        }
+    }
+    
     printf("Cuerpo del Mensaje: \n");
-    scanf("%s", msj->mensaje);
-    printf("Este es tu destinatario: %s \n", msj->destinatario);
-    printf("\nListo! se esta procesando tu mensaje...    ");
+    scanf("%s", mensj);
+    msj->mensaje = mensj;
+    printf("\nListo! se esta procesando tu mensaje...\n\n");
+
     return msj;
 }
