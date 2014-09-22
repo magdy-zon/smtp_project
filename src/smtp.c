@@ -161,11 +161,51 @@ Mensaje* crea_mensaje(){
         }
     }
     
-    printf("Cuerpo del Mensaje: \n");
-    scanf("%s", mensj);
+    printf("Por favor escribe tu mensaje: \n");
+    //scanf("%s", mensj);
+    char* buf = (char*)malloc(sizeof(char)*1000);
+    crea_cuerpo_mensaje(buf);
     msj->mensaje = mensj;
     printf("\nListo! se esta procesando tu mensaje...\n");
 
     return msj;
+}
+/*
+  Solicita al usuario que teclee el cuerpo del mensaje completo, lo procesa y
+  guarda mensaje final en buffer. Para cuando el suario ingresa el caracter '.'
+ */
+void crea_cuerpo_mensaje(char* buffer) {
+  // Aqui va guardando lo que el usuario va teleando como parte del mensaje
+
+  char bufer2[1000];
+  char bufer1[256];
+  bzero(bufer2, 1000);
+  bzero(bufer1, 256);
+
+  printf("MENSAJE>");
+  fgets(bufer1, 256, stdin);
+
+  while (!es_punto(bufer1)) {
+    printf("MENSAJE >");
+    printf("cadena ingresada: %s", bufer1);
+    fgets(bufer1, 250, stdin);
+    strcat(bufer2, bufer1);
+  }
+  strcat(bufer2, "CTRLF.CTRLF");
+  printf("texto: %s.", bufer2);
+}
+/*
+  Verifica si una cadena es un punto.
+  Para esto, se fija si la longiutd es 2, el punto más el salto de linea, 
+  en ese caso y si es igual al cracter . entonces sí escribieron un punto. 
+ */
+int es_punto(char* cadena) {
+  char elemento;
+  elemento = cadena[0];
+  if (strlen(cadena) == 2 && elemento == '.'){
+    //printf("%c", elemento);
+    return 1;
+  }
+  return 0;
 }
 
