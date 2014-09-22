@@ -182,20 +182,21 @@ char* crea_cuerpo_mensaje() {
 
   char* bufer2 = (char*)malloc(sizeof(char)*1000);
   char bufer1[256];
+  int es_un_punto = 1;
   bzero(bufer2, 1000);
-  bzero(bufer1, 256);
-
-  printf("MENSAJE>");
-  fgets(bufer1, 256, stdin);
-
-  while (!es_punto(bufer1)) {
+  getchar();
+  do {
+    bzero(bufer1, 256);
     printf("MENSAJE >");
-    printf("cadena ingresada: %s", bufer1);
     fgets(bufer1, 250, stdin);
-    strcat(bufer2, bufer1);
-  }
+    printf("cadena ingresada: %s", bufer1);
+    es_un_punto = !es_punto(bufer1);
+    if(es_un_punto){
+        strcat(bufer2, bufer1);
+    }
+  } while(es_un_punto);
   strcat(bufer2, "\x0D\x0A.\x0D\x0A");
-  //printf("texto: %s", bufer2);
+  printf("texto: %s", bufer2);
   return bufer2;
 }
 /*
