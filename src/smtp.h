@@ -32,6 +32,6 @@ Usuario* ingresa_usuario();
 /* Esta funcion nos va a servir para recopilar los datos del mensaje que se va a enviar
    a traves de la terminal en un principio */
 Mensaje* crea_mensaje();
-void crea_cuerpo_mensaje(char*);
+char* crea_cuerpo_mensaje();
 int es_punto(char*);
 #endif
