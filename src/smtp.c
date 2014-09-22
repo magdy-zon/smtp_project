@@ -27,15 +27,6 @@ int sesion(int socket){
     if (hay_error < 0) 
          error("Hubo un error al leer desde el socket verifica como fueron creados e intentalo de nuevo");
     printf("%s\n", buffer_entrada);
-    // Generamos un arreglo que tenga cada valor de la linea del estado por separado
-    // Funcion usada en la practica pasada
-    /*char** estado = separa_request_line(buffer_entrada);
-    // Si el servicio no esta disponible se sale
-    if(procesa_estado(estado)){
-        hay_error = 1;
-        close(socket);
-        return hay_error;
-    }*/
     // Limpiamos los buffers de comunicacion
     bzero(buffer_entrada, 2000);
     bzero(buffer_salida, 1000);
@@ -78,8 +69,6 @@ int sesion(int socket){
     hay_error = read(socket,buffer_entrada,2000);
     printf("Confirmacion4:\n%s\n", buffer_entrada);
     bzero(buffer_entrada, 2000);
-    // Y escribimos el mensaje
-    // char* cuerpo_mensaje = crea_cuerpo(msj->mensaje);
     // Mandamos el mensaje por el buffer
     hay_error = write(socket, msj->mensaje , strlen(msj->mensaje));
     hay_error = write(socket, "\x0D\x0A.\x0D\x0A" , strlen(msj->mensaje));
@@ -197,7 +186,6 @@ char* crea_cuerpo_mensaje() {
     strcat(bufer2, bufer1);
     bzero(bufer1, 256);
     printf("MENSAJE >");
-    //  printf("cadena ingresada: %s", bufer1);
     fgets(bufer1, 250, stdin);
   }while (!es_punto(bufer1));
   strcat(bufer2, "\x0D\x0A.\x0D\x0A");
@@ -213,7 +201,6 @@ int es_punto(char* cadena) {
   char elemento;
   elemento = cadena[0];
   if (strlen(cadena) == 2 && elemento == '.'){
-    //printf("%c", elemento);
     return 1;
   }
   return 0;
