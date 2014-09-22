@@ -164,8 +164,11 @@ Mensaje* crea_mensaje(){
     printf("Por favor escribe tu mensaje: \n");
     //scanf("%s", mensj);
     char* buf = (char*)malloc(sizeof(char)*1000);
-    crea_cuerpo_mensaje(buf);
-    msj->mensaje = mensj;
+    buf = crea_cuerpo_mensaje();
+    //printf("mensaje:%s\n", buf);
+    //msj->mensaje = mensj;
+    msj->mensaje = buf;
+    
     printf("\nListo! se esta procesando tu mensaje...\n");
 
     return msj;
@@ -174,10 +177,10 @@ Mensaje* crea_mensaje(){
   Solicita al usuario que teclee el cuerpo del mensaje completo, lo procesa y
   guarda mensaje final en buffer. Para cuando el suario ingresa el caracter '.'
  */
-void crea_cuerpo_mensaje(char* buffer) {
+char* crea_cuerpo_mensaje() {
   // Aqui va guardando lo que el usuario va teleando como parte del mensaje
 
-  char bufer2[1000];
+  char* bufer2 = (char*)malloc(sizeof(char)*1000);
   char bufer1[256];
   bzero(bufer2, 1000);
   bzero(bufer1, 256);
@@ -191,8 +194,9 @@ void crea_cuerpo_mensaje(char* buffer) {
     fgets(bufer1, 250, stdin);
     strcat(bufer2, bufer1);
   }
-  strcat(bufer2, "CTRLF.CTRLF");
-  printf("texto: %s.", bufer2);
+  strcat(bufer2, "\x0D\x0A.\x0D\x0A");
+  //printf("texto: %s", bufer2);
+  return bufer2;
 }
 /*
   Verifica si una cadena es un punto.
