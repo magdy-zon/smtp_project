@@ -161,12 +161,9 @@ Mensaje* crea_mensaje(){
         }
     }
     
-    printf("Por favor escribe tu mensaje: \n");
-    //scanf("%s", mensj);
+    printf("Por favor escribe tu mensaje: (Para terminar teclea . y luego enter)\n");
     char* buf = (char*)malloc(sizeof(char)*1000);
     buf = crea_cuerpo_mensaje();
-    //printf("mensaje:%s\n", buf);
-    //msj->mensaje = mensj;
     msj->mensaje = buf;
     
     printf("\nListo! se esta procesando tu mensaje...\n");
@@ -184,17 +181,19 @@ char* crea_cuerpo_mensaje() {
   char bufer1[256];
   int es_un_punto = 1;
   bzero(bufer2, 1000);
+  bzero(bufer1, 256);
+  // Agregado solo como un parche para que no agregue un salto de line al principio
   getchar();
-  do {
+  printf("ASUNTO >");
+  fgets(bufer1, 250, stdin);
+  strcat(bufer2, "Subject: ");
+  do{
+    strcat(bufer2, bufer1);
     bzero(bufer1, 256);
     printf("MENSAJE >");
+    //  printf("cadena ingresada: %s", bufer1);
     fgets(bufer1, 250, stdin);
-    printf("cadena ingresada: %s", bufer1);
-    es_un_punto = !es_punto(bufer1);
-    if(es_un_punto){
-        strcat(bufer2, bufer1);
-    }
-  } while(es_un_punto);
+  }while (!es_punto(bufer1));
   strcat(bufer2, "\x0D\x0A.\x0D\x0A");
   printf("texto: %s", bufer2);
   return bufer2;
