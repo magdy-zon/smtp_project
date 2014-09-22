@@ -1,7 +1,6 @@
 Magdiel Juarez Guerrero
 Ivan Fernando Garcia Nuñez
 Adan Edoardo Herrera Hidalgo
-Verónica Abad Martínez
 
 Equipo: SMTP
 
